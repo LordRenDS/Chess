@@ -1,0 +1,158 @@
+@startuml Chess
+skinparam classAttributeIconSize 0
+left to right direction
+skinparam linetype ortho
+
+package engine{
+    package board{
+        class BoardUtils{
+            {static} +NUMBER_SQUARES : int
+            {static} -ALGEBRAIC_NOTATION : array<string>
+            {static} -POSITION_TO_COORDINATE : map<string, int>
+            {static} +getCoordinateAtPosition(position : string) : int
+            {static} +getPositionAtCoordinate(coordinate : int) : string
+            {static} -initializeAlgebraicNotation() : array<string>
+            {static} -initializePositionToCoordinate() : map<string, int>
+        }
+        class Board{
+            -board : array<Square>
+            -whileFigures : vector<Figure>
+            -blackFigures : vector<Figure>
+            -setFigures()
+            +removeFigure(figure : Figure)
+        }
+        class Square{
+            -coordinate : int
+            -figureOnSquare : Figure
+            +isSquareOccupie() : bool
+        }
+        abstract class Move{
+            #figure : Figure
+            #coordinateToMove : int
+            {abstract} +execute()
+        }
+        class MajoreMove
+        class PawnMove
+        class PawnJump
+        class PawnPromotion
+        abstract class AttackMove
+        class MajorAttackMove
+        class PawnAttackMove
+        class PawnEnPassantAttackMove
+        abstract class CastleMove
+        class KingSideCastleMove
+        class QueenSideCastleMove
+        Square --* Board
+        Move <|-- MajoreMove
+        Move <|-- PawnMove
+        Move <|-- PawnJump
+        Move <|-- PawnPromotion
+        Move <|-- CastleMove
+        CastleMove <|-- KingSideCastleMove
+        CastleMove <|-- QueenSideCastleMove
+        Move <|-- AttackMove
+        AttackMove <|-- MajorAttackMove
+        AttackMove <|-- PawnAttackMove
+        PawnAttackMove <|-- PawnEnPassantAttackMove
+    }
+
+    package figure{
+        enum FigureType{
+            KING
+            QUEEN
+            ROOK
+            KNIGHT
+            BISHOP
+            PAWN
+        }
+        abstract class Figure{
+            #coordinate : int
+            #moves : vector<Move>
+            #color : Color
+            #firstMove : bool
+            #figureType : FigureType
+            {abstract} +calculateLegalMoves(board : Board)
+            +move(coordinate : int)
+            +isFirstMove() : bool
+        }
+        class King{
+            -castled : bool
+            +isCastled() : bool
+        }
+        class Queen
+        class Rook
+        class Knight
+        class Bishop
+        class Pawn{
+            -enPassant : bool
+        }
+        Figure *-- FigureType
+        King --|> Figure
+        Queen --|> Figure
+        Rook --|> Figure
+        Knight --|> Figure
+        Bishop --|> Figure
+        Pawn --|> Figure
+    }
+
+    Move --*  Figure
+    Figure --* Board
+
+    package player{
+        enum MoveStatus{
+            DONE
+            ILLEGAL_MOVE
+            LEAVE_PLAYER_IN_CHEK
+        }
+        abstract class Player{
+            -legalMoves : vector<Move>
+            -inCheck : bool
+            -calculateAttackOnSquare(opponentMoves : vector<Move>) : vector<Move>
+            +makeMove(coordinate : int, board : Board) : MoveStatus
+            {abstract} +getColor() : Color
+            {abstract} +getOponent() : Player
+            {abstract} +getActiveFigures(board : Board) : vector<Figures>
+            +isInCheck() : bool
+            +isInCheckMate() : bool
+        }
+        class WhitePlayer
+        class BlackPlayer
+        class Bot
+        WhitePlayer --|> Player
+        BlackPlayer --|> Player
+        Bot --|> Player
+    }
+    Move --o Player
+    enum Color{
+        BLACK
+        WHITE
+    }
+    Figure *-- Color
+    Square o-- Figure
+    Board *-- Figure
+    Player o-- Figure
+    Player --> Color
+}
+
+package cli{
+    enum GameMode{
+        PLAYERS
+        BOT
+    }
+    class Table{
+        -board : Board
+        -whitePlayer : Player
+        -blackPlayer : Player
+        -gameMode: GameMode
+        +startGame()
+        -setGameMode()
+        -setPlayers()
+        -getTurn() : int
+        -printBoard()
+    }
+    Table *--GameMode
+}
+
+Table *-- Board
+Table *-- Player
+@enduml

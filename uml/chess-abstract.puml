@@ -1,0 +1,96 @@
+@startuml Chess-Abstract
+skinparam classAttributeIconSize 0
+' left to right direction
+skinparam linetype ortho
+package engine{
+    package board{
+        class Board
+        class Square
+        abstract class Move
+        class MajoreMove
+        class PawnMove
+        class PawnJump
+        class PawnPromotion
+        abstract class AttacMove
+        class MajorAttacMove
+        class PawnAttacMove
+        class PawnEnPassantAttacMove
+        abstract class CastleMove
+        class KingSideCastleMove
+        class QueenSideCastleMove
+
+        Square --* Board
+        Move <|-- MajoreMove
+        Move <|-- PawnMove
+        Move <|-- PawnJump
+        Move <|-- PawnPromotion
+        Move <|-- CastleMove
+        CastleMove <|-- KingSideCastleMove
+        CastleMove <|-- QueenSideCastleMove
+        Move <|-- AttacMove
+        AttacMove <|-- MajorAttacMove
+        AttacMove <|-- PawnAttacMove
+        PawnAttacMove <|-- PawnEnPassantAttacMove
+    }
+    package figure{
+        enum FigureType
+        abstract class Figure
+        class King
+        class Queen
+        class Rook
+        class Knight
+        class Bishop
+        class Pawn
+        Figure *-- FigureType
+        King --|> Figure
+        Queen --|> Figure
+        Rook --|> Figure
+        Knight --|> Figure
+        Bishop --|> Figure
+        Pawn --|> Figure
+    }
+    package player{
+        enum MoveStatus
+        abstract class Player
+        class WhitePlayer
+        class BlackPlayer
+        class Bot
+        WhitePlayer --|> Player
+        BlackPlayer --|> Player
+        Bot --|> Player
+    }
+    enum Color
+    Figure *-- Color
+    Square o-- Figure
+    Board *-- Figure
+}
+package cli{
+    class Table
+    Table *-- Board
+    Table *-- Player
+}
+@enduml
+
+@startuml Concept
+skinparam classAttributeIconSize 0
+left to right direction
+' skinparam linetype ortho
+class Table
+class Player
+class Board
+class Square
+class Figure
+class Move
+Table *--> Player
+Table *--> Board
+Board *--> Square
+Player *--> Move
+Square *-- Figure
+Move --> Figure
+' Board ..> Figure : <create>
+' Figure ..> Move : <create>
+' Table ..> Board : <create>
+' Table ..> Player : <create>
+' Board ..> Square : <create>
+' Move ..> Board : <create>
+@enduml
