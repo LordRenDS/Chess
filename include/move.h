@@ -7,7 +7,8 @@ class Board;
 
 class Move {
   protected:
-    Figure *movedFigure;
+    Move() = default;
+    Figure *movedFigure{};
     int coordinateToMove{};
 
   public:
@@ -32,7 +33,7 @@ class AttackMove : public Move {
   public:
     Figure *getAttackFigure();
     //
-    std::unique_ptr<Board> execute(Board &board) override;
+    std::unique_ptr<Board> execute(Board &board) override = 0;
 };
 
 class MajorAttacMove : public AttackMove {
@@ -62,19 +63,34 @@ class PawnJump : public Move {
 
 class PawnPromotion : public Move {
   private:
+    std::unique_ptr<Figure> promotionFigure;
     std::unique_ptr<Move> decoratedMove;
 
   public:
+    PawnPromotion(std::unique_ptr<Move> decoratedMove);
+    //
+    void setPromotionFigure(std::unique_ptr<Figure> figure);
+    //
     std::unique_ptr<Board> execute(Board &board) override;
 };
 
 class CastleMove : public Move {
+  private:
+    Figure *rook{};
+
+  public:
+    CastleMove(Figure *king, Figure *rook);
+    std::unique_ptr<Board> execute(Board &board) override = 0;
+};
+
+class KingSideCastleMove : public CastleMove {
   public:
     std::unique_ptr<Board> execute(Board &board) override;
 };
 
-class KingSideCastleMove : public CastleMove {};
-
-class QueenSideCastleMove : public CastleMove {};
+class QueenSideCastleMove : public CastleMove {
+  public:
+    std::unique_ptr<Board> execute(Board &board) override;
+};
 
 #endif
