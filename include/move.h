@@ -8,15 +8,15 @@ class Board;
 class Move {
   protected:
     Move() = default;
-    Figure *movedFigure{};
+    const Figure *movedFigure{};
     int coordinateToMove{};
 
   public:
-    Move(Figure *figure, int coordinateToMove);
+    explicit Move(const Figure *figure, int coordinateToMove);
     virtual ~Move() = default;
     //
     int getCoordinateToMove() const;
-    Figure *getMovedFigure();
+    const Figure *getMovedFigure() const;
     //
     virtual std::unique_ptr<Board> execute(Board &board) = 0;
 };
@@ -31,14 +31,13 @@ class MajorMove : public Move {
 
 class AttackMove : public Move {
   protected:
-    Figure *attackFigure;
+    const Figure *attackFigure;
 
   public:
-    using Move::Move;
-    AttackMove() = delete;
+    AttackMove(const Figure *figure, const Figure *attackFigure);
     ~AttackMove() override = default;
     //
-    Figure *getAttackFigure();
+    const Figure *getAttackFigure() const;
     //
     std::unique_ptr<Board> execute(Board &board) override = 0;
 };
@@ -95,11 +94,11 @@ class PawnPromotion : public Move {
 
 class CastleMove : public Move {
   private:
+    const Figure *rook{};
     int rookDestinationCoordinate{};
-    Figure *rook{};
 
   public:
-    CastleMove(Figure *king, int kingDestCoord, Figure *rook,
+    CastleMove(const Figure *king, int kingDestCoord, const Figure *rook,
                int rookDestCoord);
     ~CastleMove() override = default;
     //

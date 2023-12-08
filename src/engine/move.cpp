@@ -2,7 +2,7 @@
 #include "board.h"
 #include "figure.h"
 
-Move::Move(Figure *figure, int coordinateToMove)
+Move::Move(const Figure *figure, const int coordinateToMove)
     : movedFigure(figure), coordinateToMove(coordinateToMove) {
 }
 
@@ -10,7 +10,7 @@ int Move::getCoordinateToMove() const {
     return coordinateToMove;
 }
 
-Figure *Move::getMovedFigure() {
+const Figure *Move::getMovedFigure() const {
     return movedFigure;
 }
 
@@ -26,7 +26,11 @@ std::unique_ptr<Board> MajorMove::execute(Board &board) {
     return Move::execute(board);
 }
 
-Figure *AttackMove::getAttackFigure() {
+AttackMove::AttackMove(const Figure *figure, const Figure *attackFigure)
+    : Move(figure, attackFigure->getCoordinate()), attackFigure(attackFigure) {
+}
+
+const Figure *AttackMove::getAttackFigure() const {
     return attackFigure;
 }
 
@@ -77,10 +81,10 @@ std::unique_ptr<Board> PawnPromotion::execute(Board &board) {
     return movedBoard;
 }
 
-CastleMove::CastleMove(Figure *king, int kingDestCoord, Figure *rook,
-                       int rookDestCoord)
-    : Move(king, kingDestCoord), rook(rook),
-      rookDestinationCoordinate(rookDestCoord) {
+CastleMove::CastleMove(const Figure *king, int kingDestCoord,
+                       const Figure *rook, int rookDestCoord)
+    : Move(king, kingDestCoord), rookDestinationCoordinate(rookDestCoord),
+      rook(rook) {
 }
 
 std::unique_ptr<Board> CastleMove::execute(Board &board) {
