@@ -6,7 +6,7 @@
 #include <iostream>
 #include <limits>
 
-Table::Table() : board(std::make_unique<Board>()) {
+Table::Table() {
     setGameMode();
     setPlayers();
 }
@@ -94,16 +94,19 @@ Move *Table::getPlayerTurn(Player *currentPlayer) {
         try {
             std::getline(std::cin, input);
             figureCoordinate = BoardUtils::getCoordinateAtPosition(input);
-            if (board->getSquare(figureCoordinate)->isSquareOccupie() &&
-                board->getSquare(figureCoordinate)
-                        ->getFigureOnSquare()
-                        ->getColor() != currentPlayer->getColor()) {
-                std::cout << "It's not your figure, please, repeat: ";
+            if (!board->getSquare(figureCoordinate)->isSquareOccupied()) {
+                std::cout
+                    << "Empty square, please, select square with figure!\n";
+                continue;
+            } else if (board->getSquare(figureCoordinate)
+                           ->getFigureOnSquare()
+                           ->getColor() != currentPlayer->getColor()) {
+                std::cout << "It's not your figure, please, repeat!\n";
                 continue;
             }
             break;
         } catch (const std::out_of_range &ex) {
-            std::cout << "Wrong input, please, repeat: ";
+            std::cout << "Wrong input, please, repeat!\n";
         }
     }
     std::cout << "Select destination square: ";
@@ -115,8 +118,14 @@ Move *Table::getPlayerTurn(Player *currentPlayer) {
             for (const auto &move : currentPlayer->getLegalMoves()) {
                 if (move->getMovedFigure() == board->getSquare(figureCoordinate)
                                                   ->getFigureOnSquare() &&
-                    move->getCoordinateToMove() == destinationCoordinate)
+                    move->getCoordinateToMove() == destinationCoordinate) {
+                    auto pawnPromotion(
+                        dynamic_cast<PawnPromotion *>(move.get()));
+                    if (pawnPromotion)
+                        pawnPromotion->setPromotionFigure(
+                            getPromoteFigure(pawnPromotion));
                     return move.get();
+                }
             }
             std::cout << "Wrong destination square, please, repeat: ";
         } catch (const std::out_of_range &ex) {
@@ -130,4 +139,26 @@ Player *Table::getOpponent(const Player *player) {
         return whitePlayer.get();
     else
         return blackPlayer.get();
+}
+
+std::unique_ptr<Figure> Table::getPromoteFigure(Move *move) const {
+    std::cout << "Select the figure for pawn promotion:\n(Q)ueen, (Kn)ight, "
+                 "(R)ook, (B)ishop:";
+    std::string input;
+    int coordinate{move->getCoordinateToMove()};
+    Color::ColorT color{move->getMovedFigure()->getColor()};
+    while (true) {
+        std::getline(std::cin, input);
+        if (input == "Q")
+            return std::make_unique<Queen>(coordinate, color);
+        else if (input == "Kn")
+            return std::make_unique<Knight>(coordinate, color);
+        else if (input == "R")
+            return std::make_unique<Rook>(coordinate, color);
+
+        else if (input == "B")
+            return std::make_unique<Bishop>(coordinate, color);
+        else
+            std::cout << "Wrong input, please, repeat!\n";
+    }
 }
