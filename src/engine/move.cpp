@@ -6,7 +6,7 @@ Move::Move(Figure *figure, int coordinateToMove)
     : movedFigure(figure), coordinateToMove(coordinateToMove) {
 }
 
-int Move::getCoordinateToMove() {
+int Move::getCoordinateToMove() const {
     return coordinateToMove;
 }
 
@@ -55,7 +55,7 @@ std::unique_ptr<Board> PawnMove::execute(Board &board) {
 }
 
 std::unique_ptr<Board> PawnEnPassantAttackMove::execute(Board &board) {
-    return AttackMove::execute(board);
+    return PawnAttackMove::execute(board);
 }
 
 std::unique_ptr<Board> PawnJump::execute(Board &board) {
@@ -77,17 +77,20 @@ std::unique_ptr<Board> PawnPromotion::execute(Board &board) {
     return movedBoard;
 }
 
-CastleMove::CastleMove(Figure *king, Figure *rook)
-    : Move(king, rook->getCoordinate()), rook(rook) {
+CastleMove::CastleMove(Figure *king, int kingDestCoord, Figure *rook,
+                       int rookDestCoord)
+    : Move(king, kingDestCoord), rook(rook),
+      rookDestinationCoordinate(rookDestCoord) {
 }
 
 std::unique_ptr<Board> CastleMove::execute(Board &board) {
     std::unique_ptr<Board> movedBoard(std::make_unique<Board>(board));
     std::unique_ptr<Figure> movedRook(
-        movedBoard->getSquare(coordinateToMove)->releaseFigure());
+        movedBoard->getSquare(rook->getCoordinate())->releaseFigure());
     movedBoard->getSquare(movedFigure->getCoordinate())
         ->getFigureOnSquare()
         ->move(coordinateToMove, *movedBoard);
+    movedRook->move(rookDestinationCoordinate, *movedBoard);
     return movedBoard;
 }
 
