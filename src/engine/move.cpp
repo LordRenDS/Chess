@@ -22,7 +22,7 @@ std::unique_ptr<Board> Move::execute(Board &board) {
     return movedBoard;
 }
 
-std::unique_ptr<Board> MajoreMove::execute(Board &board) {
+std::unique_ptr<Board> MajorMove::execute(Board &board) {
     return Move::execute(board);
 }
 
@@ -42,11 +42,11 @@ std::unique_ptr<Board> AttackMove::execute(Board &board) {
     return Move::execute(board);
 }
 
-std::unique_ptr<Board> MajorAttacMove::execute(Board &board) {
+std::unique_ptr<Board> MajorAttackMove::execute(Board &board) {
     return AttackMove::execute(board);
 }
 
-std::unique_ptr<Board> PawnAttacMove::execute(Board &board) {
+std::unique_ptr<Board> PawnAttackMove::execute(Board &board) {
     return AttackMove::execute(board);
 }
 
@@ -54,7 +54,7 @@ std::unique_ptr<Board> PawnMove::execute(Board &board) {
     return Move::execute(board);
 }
 
-std::unique_ptr<Board> PawnEnPassantAttacMove::execute(Board &board) {
+std::unique_ptr<Board> PawnEnPassantAttackMove::execute(Board &board) {
     return AttackMove::execute(board);
 }
 

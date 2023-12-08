@@ -1,6 +1,7 @@
 #include "board.h"
-// #include "figure.h"
+#include "figure.h"
 #include <iostream>
+#include <format>
 
 Square::Square(int coordinate) : coordinate(coordinate) {
 }
@@ -26,8 +27,8 @@ std::unique_ptr<Figure> Square::releaseFigure() {
     return std::move(figureOnSquare);
 }
 
-bool Square::isSquareOccupie() const {
-    return figureOnSquare == nullptr ? false : true;
+bool Square::isSquareOccupied() const {
+    return !(figureOnSquare == nullptr);
 }
 
 void Board::setFigureOnBoard(std::unique_ptr<Figure> figure) {
@@ -82,7 +83,7 @@ Board::Board(const Board &board) {
     }
 }
 
-Board &Board::operator=(Board &&board) {
+Board &Board::operator=(Board &&board) noexcept {
     if (&board == this)
         return *this;
     this->board = std::move(board.board);
@@ -92,7 +93,7 @@ Board &Board::operator=(Board &&board) {
 std::vector<Figure *> Board::getActiveFigures() {
     std::vector<Figure *> figures;
     for (auto &square : board)
-        if (square->isSquareOccupie())
+        if (square->isSquareOccupied())
             figures.push_back(square->getFigureOnSquare());
     return figures;
 }
@@ -100,7 +101,7 @@ std::vector<Figure *> Board::getActiveFigures() {
 std::vector<Figure *> Board::getActiveFigures(Color::ColorT color) {
     std::vector<Figure *> figures;
     for (auto &square : board) {
-        if (square->isSquareOccupie() &&
+        if (square->isSquareOccupied() &&
             square->getFigureOnSquare()->getColor() == color)
             figures.push_back(square->getFigureOnSquare());
     }
@@ -137,7 +138,8 @@ void Board::printBoard() const {
     int row{8};
     for (int i{}; i < BoardUtils::NUMBER_SQUARES; i++) {
         if (i % BoardUtils::NUMBER_SQUARE_PER_ROW == 0) {
-            std::cout << std::to_string(row) + " |";
+//            std::cout << std::to_string(row) + " |";
+            std::cout << std::format("{} |", row);
             row--;
         }
         if (board[i]->getFigureOnSquare() != nullptr) {

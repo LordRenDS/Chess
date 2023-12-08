@@ -6,8 +6,7 @@
 #include <memory>
 #include <vector>
 
-#include "figure.h"
-// class Figure;
+class Figure;
 
 class Square {
   private:
@@ -16,7 +15,7 @@ class Square {
 
   public:
     explicit Square(int coordinate);
-    explicit Square(const Square &square);
+    Square(const Square &square);
     ~Square() = default;
     //
     int getCoordinate() const;
@@ -24,7 +23,7 @@ class Square {
     void setFigureOnSquare(std::unique_ptr<Figure> newFigure);
     //
     std::unique_ptr<Figure> releaseFigure();
-    bool isSquareOccupie() const;
+    bool isSquareOccupied() const;
 };
 
 class Board {
@@ -34,39 +33,15 @@ class Board {
 
   public:
     explicit Board();
-    explicit Board(const Board &board);
+    Board(const Board &board);
     ~Board() = default;
     //
-    Board &operator=(Board &&board);
+    Board &operator=(Board &&board) noexcept;
     //
     std::vector<Figure *> getActiveFigures();
     std::vector<Figure *> getActiveFigures(Color::ColorT color);
     Square *getSquare(int coordinate);
     void printBoard() const;
 };
-
-// class Move {};
-
-// class MajoreMove : public Move {};
-
-// class PawnMove : public Move {};
-
-// class PawnJump : public Move {};
-
-// class PawnPromotion : public Move {};
-
-// class AttackMove : public Move {};
-
-// class MajorAttackMove : public AttackMove {};
-
-// class PawnAttackMove : public AttackMove {};
-
-// class PawnEnPassantAttackMove : public PawnAttackMove {};
-
-// class CastleMove : public Move {};
-
-// class KingSideCastleMove : public CastleMove {};
-
-// class QueenSideCastleMove : public CastleMove {};
 
 #endif

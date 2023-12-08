@@ -21,7 +21,7 @@ class Move {
     virtual std::unique_ptr<Board> execute(Board &board) = 0;
 };
 
-class MajoreMove : public Move {
+class MajorMove : public Move {
   public:
     std::unique_ptr<Board> execute(Board &board) override;
 };
@@ -36,17 +36,17 @@ class AttackMove : public Move {
     std::unique_ptr<Board> execute(Board &board) override = 0;
 };
 
-class MajorAttacMove : public AttackMove {
+class MajorAttackMove : public AttackMove {
   public:
     std::unique_ptr<Board> execute(Board &board) override;
 };
 
-class PawnAttacMove : public AttackMove {
+class PawnAttackMove : public AttackMove {
   public:
     std::unique_ptr<Board> execute(Board &board) override;
 };
 
-class PawnEnPassantAttacMove : public PawnAttacMove {
+class PawnEnPassantAttackMove : public PawnAttackMove {
   public:
     std::unique_ptr<Board> execute(Board &board) override;
 };
@@ -67,7 +67,7 @@ class PawnPromotion : public Move {
     std::unique_ptr<Move> decoratedMove;
 
   public:
-    PawnPromotion(std::unique_ptr<Move> decoratedMove);
+    explicit PawnPromotion(std::unique_ptr<Move> decoratedMove);
     //
     void setPromotionFigure(std::unique_ptr<Figure> figure);
     //

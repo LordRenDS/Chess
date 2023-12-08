@@ -1,33 +1,5 @@
 #include "board_utils.h"
 
-namespace {
-    // std::array<bool, BoardUtils::NUMBER_SQUARES> initRow(int rowNumber) {
-    //     std::array<bool, BoardUtils::NUMBER_SQUARES> row{};
-    //     do {
-    //         row[rowNumber] = true;
-    //         rowNumber++;
-    //     } while (rowNumber % BoardUtils::NUMBER_SQUARE_PER_ROW != 0);
-    //     return row;
-    // }
-
-    // std::array<bool, BoardUtils::NUMBER_SQUARES> initColumn(int colNumber) {
-    //     std::array<bool, BoardUtils::NUMBER_SQUARES> column{};
-    //     do {
-    //         column[colNumber] = true;
-    //         colNumber += BoardUtils::NUMBER_SQUARE_PER_ROW;
-    //     } while (colNumber < BoardUtils::NUMBER_SQUARES);
-    //     return column;
-    // }
-
-    // std::map<std::string, int> initializePositionToCoordinate() {
-    //     std::map<std::string, int> positionToCoordinate;
-    //     for (int i{0}; i < BoardUtils::NUMBER_SQUARES; i++) {
-    //         positionToCoordinate[BoardUtils::ALGEBRAIC_NOTATION[i]] = i;
-    //     }
-    //     return positionToCoordinate;
-    // }
-}
-
 const std::array<bool, BoardUtils::NUMBER_SQUARES> BoardUtils::EIGHTH_RANK =
     BoardUtils::initRow(0);
 const std::array<bool, BoardUtils::NUMBER_SQUARES> BoardUtils::SEVENTH_RANK =

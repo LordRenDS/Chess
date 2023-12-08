@@ -6,9 +6,7 @@
 #include <vector>
 
 // todo
-class Figure;
 class Move;
-class Table;
 class Board;
 
 class Player {
@@ -33,7 +31,7 @@ class Player {
     std::vector<std::unique_ptr<Move>> &getLegalMoves();
     virtual Color::ColorT getColor() const = 0;
     //
-    MoveStatus makeMove(const Move *move, Board &board, Player *opponent);
+    MoveStatus makeMove(Move *move, Board &board, Player *opponent);
     bool isInCheckMate(Board &board, Player *opponent);
     std::string getPlayerName();
 };
@@ -51,7 +49,6 @@ class BlackPlayer : public Player {
 };
 
 class Bot : public Player {};
-
 
 // int main(){
 // 	WhitePlayer p();

@@ -57,7 +57,7 @@ std::vector<std::unique_ptr<Move>> &Player::getLegalMoves() {
     return legalMoves;
 }
 
-MoveStatus Player::makeMove(const Move *move, Board &board, Player *opponent) {
+MoveStatus Player::makeMove(Move *move, Board &board, Player *opponent) {
     std::unique_ptr<Board> movedBoard{move->execute(board)};
     std::vector<std::unique_ptr<Move>> opponentMoves{
         opponent->calculateLegalMoves(*movedBoard)};
