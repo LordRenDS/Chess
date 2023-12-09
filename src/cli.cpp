@@ -15,6 +15,10 @@ Board *Table::getBoard() {
     return board.get();
 }
 
+const Board *Table::getBoard() const {
+    return board.get();
+}
+
 void Table::setBoard(std::unique_ptr<Board> board) {
     this->board = std::move(board);
 }
@@ -23,7 +27,15 @@ WhitePlayer *Table::getWhitePlayer() {
     return whitePlayer.get();
 }
 
+const WhitePlayer *Table::getWhitePlayer() const {
+    return whitePlayer.get();
+}
+
 BlackPlayer *Table::getBlackPlayer() {
+    return blackPlayer.get();
+}
+
+const BlackPlayer *Table::getBlackPlayer() const {
     return blackPlayer.get();
 }
 

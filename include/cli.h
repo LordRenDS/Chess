@@ -9,6 +9,7 @@ class WhitePlayer;
 class BlackPlayer;
 class Move;
 class Figure;
+
 enum class GameMode {
     PLAYERS = 1,
     BOT = 2
@@ -31,9 +32,12 @@ class Table {
     ~Table() = default;
     //
     Board *getBoard();
+    const Board *getBoard() const;
     void setBoard(std::unique_ptr<Board> board);
     WhitePlayer *getWhitePlayer();
+    const WhitePlayer *getWhitePlayer() const;
     BlackPlayer *getBlackPlayer();
+    const BlackPlayer *getBlackPlayer() const;
     //
     void startGame();
 };
