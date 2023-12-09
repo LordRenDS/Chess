@@ -1,7 +1,7 @@
 #include "board.h"
 #include "figure.h"
-#include <iostream>
 #include <format>
+#include <iostream>
 
 Square::Square(int coordinate) : coordinate(coordinate) {
 }
@@ -16,6 +16,10 @@ int Square::getCoordinate() const {
 }
 
 Figure *Square::getFigureOnSquare() {
+    return figureOnSquare.get();
+}
+
+const Figure *Square::getFigureOnSquare() const {
     return figureOnSquare.get();
 }
 
@@ -129,7 +133,7 @@ Square *Board::getSquare(int coordinate) {
 - |----|----|----|----|----|----|----|----|
 2 | wP | wP | wP | wP | wP | wP | wP | wP |
 - |----|----|----|----|----|----|----|----|
-1 | wR |wKn | wB | wQ | bK | wB |wKn | wR |
+1 | wR |wKn | wB | wQ | wK | wB |wKn | wR |
 - ^---------------------------------------^
 */
 void Board::printBoard() const {
@@ -138,7 +142,6 @@ void Board::printBoard() const {
     int row{8};
     for (int i{}; i < BoardUtils::NUMBER_SQUARES; i++) {
         if (i % BoardUtils::NUMBER_SQUARE_PER_ROW == 0) {
-//            std::cout << std::to_string(row) + " |";
             std::cout << std::format("{} |", row);
             row--;
         }

@@ -20,6 +20,7 @@ class Square {
     //
     int getCoordinate() const;
     Figure *getFigureOnSquare();
+    const Figure *getFigureOnSquare() const;
     void setFigureOnSquare(std::unique_ptr<Figure> newFigure);
     //
     std::unique_ptr<Figure> releaseFigure();
