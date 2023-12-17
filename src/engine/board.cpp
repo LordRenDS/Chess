@@ -1,5 +1,7 @@
 #include "board.h"
 #include "figure.h"
+#include "figure_type.h"
+#include "move.h"
 #include <format>
 #include <iostream>
 
@@ -8,7 +10,8 @@ Square::Square(int coordinate) : coordinate(coordinate) {
 
 Square::Square(const Square &square)
     : coordinate(square.coordinate),
-      figureOnSquare(square.figureOnSquare->clone()) {
+      figureOnSquare(square.isSquareOccupied() ? square.figureOnSquare->clone()
+                                               : nullptr) {
 }
 
 int Square::getCoordinate() const {
@@ -87,10 +90,19 @@ Board::Board(const Board &board) {
     }
 }
 
+void Board::setEnPassantPawn(Pawn *pawn) {
+    enPassantPawn = pawn;
+}
+
+Pawn *Board::getEnPassantPawn() {
+    return enPassantPawn;
+}
+
 Board &Board::operator=(Board &&board) noexcept {
     if (&board == this)
         return *this;
     this->board = std::move(board.board);
+    this->enPassantPawn = board.enPassantPawn;
     return *this;
 }
 
@@ -114,6 +126,28 @@ std::vector<Figure *> Board::getActiveFigures(Color::ColorT color) {
 
 Square *Board::getSquare(int coordinate) {
     return board[coordinate].get();
+}
+
+const Square *Board::getSquare(int coordinate) const {
+    return board[coordinate].get();
+}
+
+std::vector<std::unique_ptr<Move>>
+Board::calculateLegalMoves(Color::ColorT playerColor) {
+    std::vector<std::unique_ptr<Move>> moves;
+    for (auto &figure : getActiveFigures(playerColor)) {
+        auto calculated{figure->calculateLegalMoves(*this)};
+        for (auto &move : calculated)
+            moves.push_back(std::move(move));
+    }
+    return moves;
+}
+
+King *Board::getKing(Color::ColorT color) {
+    for (auto figure : getActiveFigures(color))
+        if (figure->getFigureType() == FigureType::KING)
+            return dynamic_cast<King *>(figure);
+    return nullptr;
 }
 
 /*
