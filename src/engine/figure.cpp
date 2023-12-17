@@ -1,6 +1,7 @@
 #include "figure.h"
 #include "board.h"
 #include "board_utils.h"
+#include "figure_type.h"
 #include "move.h"
 
 Figure::Figure(int coordinate, Color::ColorT color, FigureType figureType)
@@ -47,7 +48,8 @@ King::King(int coordinate, Color::ColorT color)
     : Figure(coordinate, color, FigureType::KING) {
 }
 
-std::vector<std::unique_ptr<Move>> King::calculateLegalMoves(Board &board) {
+std::vector<std::unique_ptr<Move>>
+King::calculateLegalMoves(Board &board) const {
     std::vector<std::unique_ptr<Move>> legalMoves;
     for (auto &currentCandidateOffset : CANDIDATE_MOVE_COORDINATES) {
         if (isFirstColumnExclusion(coordinate, currentCandidateOffset) ||
@@ -61,7 +63,7 @@ std::vector<std::unique_ptr<Move>> King::calculateLegalMoves(Board &board) {
             Square *candidateDestinationSquare =
                 board.getSquare(candidateDestinationCoordinate);
             if (!candidateDestinationSquare->isSquareOccupied()) {
-                legalMoves.push_back(std::make_unique<MajoreMove>(
+                legalMoves.push_back(std::make_unique<MajorMove>(
                     this, candidateDestinationCoordinate));
             } else {
                 Figure *figureAtDestination{
@@ -82,15 +84,16 @@ bool King::isCastled() const {
     return castled;
 }
 
-std::string King::getFigureName() {
+bool King::isInCheck() const {
+    return inCheck;
+}
+
+std::string King::getFigureName() const {
     return Color::getColorName(this->color) + "K";
 }
 
 std::unique_ptr<Figure> King::clone() const {
     return std::make_unique<King>(*this);
-}
-bool King::isInCheck() const {
-    return inCheck;
 }
 
 Queen::Queen(int coordinate, Color::ColorT color)
@@ -109,7 +112,8 @@ bool Queen::isEightColumnExclusion(int currentPosition, int candidateOffset) {
             candidateOffset == 9);
 }
 
-std::vector<std::unique_ptr<Move>> Queen::calculateLegalMoves(Board &board) {
+std::vector<std::unique_ptr<Move>>
+Queen::calculateLegalMoves(Board &board) const {
     std::vector<std::unique_ptr<Move>> legalMoves;
     for (int currentCandidateOffset : CANDIDATE_MOVE_VECTOR_COORDINATES) {
         int candidateDestinationCoordinate{coordinate};
@@ -127,7 +131,7 @@ std::vector<std::unique_ptr<Move>> Queen::calculateLegalMoves(Board &board) {
                 Square *candidateDestinationSquare =
                     board.getSquare(candidateDestinationCoordinate);
                 if (!candidateDestinationSquare->isSquareOccupied()) {
-                    legalMoves.push_back(std::make_unique<MajoreMove>(
+                    legalMoves.push_back(std::make_unique<MajorMove>(
                         this, candidateDestinationCoordinate));
                 } else {
                     Figure *figureAtDestination{
@@ -145,7 +149,7 @@ std::vector<std::unique_ptr<Move>> Queen::calculateLegalMoves(Board &board) {
     return legalMoves;
 }
 
-std::string Queen::getFigureName() {
+std::string Queen::getFigureName() const {
     return Color::getColorName(this->color) + "Q";
 }
 
@@ -165,7 +169,8 @@ bool Rook::isEightColumnExclusion(int currentPosition, int candidateOffset) {
     return BoardUtils::EIGHT_COLUMN[currentPosition] && (candidateOffset == 1);
 }
 
-std::vector<std::unique_ptr<Move>> Rook::calculateLegalMoves(Board &board) {
+std::vector<std::unique_ptr<Move>>
+Rook::calculateLegalMoves(Board &board) const {
     std::vector<std::unique_ptr<Move>> legalMoves;
     for (int currentCandidateOffset : CANDIDATE_MOVE_VECTOR_COORDINATES) {
         int candidateDestinationCoordinate{coordinate};
@@ -183,7 +188,7 @@ std::vector<std::unique_ptr<Move>> Rook::calculateLegalMoves(Board &board) {
                 Square *candidateDestinationSquare =
                     board.getSquare(candidateDestinationCoordinate);
                 if (!candidateDestinationSquare->isSquareOccupied()) {
-                    legalMoves.push_back(std::make_unique<MajoreMove>(
+                    legalMoves.push_back(std::make_unique<MajorMove>(
                         this, candidateDestinationCoordinate));
                 } else {
                     Figure *figureAtDestination{
@@ -201,7 +206,7 @@ std::vector<std::unique_ptr<Move>> Rook::calculateLegalMoves(Board &board) {
     return legalMoves;
 }
 
-std::string Rook::getFigureName() {
+std::string Rook::getFigureName() const {
     return Color::getColorName(this->color) + "R";
 }
 
@@ -236,7 +241,8 @@ bool Knight::isEightColumnExclusion(int currentPosition, int candidateOffset) {
             (candidateOffset == 10) || (candidateOffset == 17));
 }
 
-std::vector<std::unique_ptr<Move>> Knight::calculateLegalMoves(Board &board) {
+std::vector<std::unique_ptr<Move>>
+Knight::calculateLegalMoves(Board &board) const {
     std::vector<std::unique_ptr<Move>> legalMoves;
     for (auto &currentCandidateOffset : CANDIDATE_MOVE_COORDINATES) {
         if (isFirstColumnExclusion(coordinate, currentCandidateOffset) ||
@@ -252,7 +258,7 @@ std::vector<std::unique_ptr<Move>> Knight::calculateLegalMoves(Board &board) {
             Square *candidateDestinationSquare{
                 board.getSquare(candidateDestinationCoordinate)};
             if (!candidateDestinationSquare->isSquareOccupied()) {
-                legalMoves.push_back(std::make_unique<MajoreMove>(
+                legalMoves.push_back(std::make_unique<MajorMove>(
                     this, candidateDestinationCoordinate));
             } else {
                 Figure *figureAtDestination{
@@ -268,7 +274,7 @@ std::vector<std::unique_ptr<Move>> Knight::calculateLegalMoves(Board &board) {
     return legalMoves;
 }
 
-std::string Knight::getFigureName() {
+std::string Knight::getFigureName() const {
     return Color::getColorName(this->color) + "Kn";
 }
 
@@ -290,7 +296,8 @@ bool Bishop::isEightColumnExclusion(int currentPosition, int candidateOffset) {
            (candidateOffset == -7 || candidateOffset == 9);
 }
 
-std::vector<std::unique_ptr<Move>> Bishop::calculateLegalMoves(Board &board) {
+std::vector<std::unique_ptr<Move>>
+Bishop::calculateLegalMoves(Board &board) const {
     std::vector<std::unique_ptr<Move>> legalMoves;
     for (int currentCandidateOffset : CANDIDATE_MOVE_VECTOR_COORDINATES) {
         int candidateDestinationCoordinate{coordinate};
@@ -308,7 +315,7 @@ std::vector<std::unique_ptr<Move>> Bishop::calculateLegalMoves(Board &board) {
                 Square *candidateDestinationSquare =
                     board.getSquare(candidateDestinationCoordinate);
                 if (!candidateDestinationSquare->isSquareOccupied()) {
-                    legalMoves.push_back(std::make_unique<MajoreMove>(
+                    legalMoves.push_back(std::make_unique<MajorMove>(
                         this, candidateDestinationCoordinate));
                 } else {
                     Figure *figureAtDestination{
@@ -326,7 +333,7 @@ std::vector<std::unique_ptr<Move>> Bishop::calculateLegalMoves(Board &board) {
     return legalMoves;
 }
 
-std::string Bishop::getFigureName() {
+std::string Bishop::getFigureName() const {
     return Color::getColorName(this->color) + "B";
 }
 
@@ -346,13 +353,14 @@ bool Pawn::isHasEnPassantMove(Board &board, int enPassantCoordinate) const {
         enPassantSquare->getFigureOnSquare()->getColor() != color) {
         const Pawn *enPassantPawn{
             dynamic_cast<Pawn *>(enPassantSquare->getFigureOnSquare())};
-        if (enPassantPawn && enPassantPawn->isEnPassant())
+        if (enPassantPawn && enPassantPawn == board.getEnPassantPawn())
             return true;
     }
     return false;
 }
 
-std::vector<std::unique_ptr<Move>> Pawn::calculateLegalMoves(Board &board) {
+std::vector<std::unique_ptr<Move>>
+Pawn::calculateLegalMoves(Board &board) const {
     std::vector<std::unique_ptr<Move>> legalMoves;
     for (auto &currentCandidateOffset : CANDIDATE_MOVE_COORDINATES) {
         const int candidateDestinationCoordinate{
@@ -416,7 +424,8 @@ std::vector<std::unique_ptr<Move>> Pawn::calculateLegalMoves(Board &board) {
                                    Color::getOppositeDirection(color))
                         ->getFigureOnSquare();
                 legalMoves.push_back(std::make_unique<PawnEnPassantAttackMove>(
-                    this, figureOnCandidate));
+                    this, figureOnCandidate,
+                        candidateDestinationCoordinate));
             }
         } else if (currentCandidateOffset == 9 &&
                    !((BoardUtils::EIGHT_COLUMN[coordinate] &&
@@ -446,25 +455,17 @@ std::vector<std::unique_ptr<Move>> Pawn::calculateLegalMoves(Board &board) {
                                    Color::getOppositeDirection(color))
                         ->getFigureOnSquare();
                 legalMoves.push_back(std::make_unique<PawnEnPassantAttackMove>(
-                    this, figureOnCandidate));
+                    this, figureOnCandidate, candidateDestinationCoordinate));
             }
         }
     }
     return legalMoves;
 }
 
-std::string Pawn::getFigureName() {
+std::string Pawn::getFigureName() const {
     return Color::getColorName(this->color) + "P";
 }
 
 std::unique_ptr<Figure> Pawn::clone() const {
     return std::make_unique<Pawn>(*this);
-}
-
-bool Pawn::isEnPassant() const {
-    return enPassant;
-}
-
-void Pawn::setEnPassant(bool enPassant) {
-    Pawn::enPassant = enPassant;
 }

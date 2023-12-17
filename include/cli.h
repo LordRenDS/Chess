@@ -1,6 +1,5 @@
 #ifndef CLI_H
 #define CLI_H
-#include "figure_type.h"
 #include <memory>
 
 class Board;
@@ -24,7 +23,7 @@ class Table {
     void setGameMode();
     void setPlayers();
     Move *getPlayerTurn(Player *currentPlayer);
-    std::unique_ptr<Figure> getPromoteFigure(Move *move) const;
+    std::unique_ptr<Figure> getPromoteFigure(const Move *move) const;
     Player *getOpponent(const Player *player);
 
   public:

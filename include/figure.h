@@ -1,12 +1,13 @@
 #ifndef FIGURE_H
 #define FIGURE_H
 #include "color.h"
-#include "figure_type.h"
 #include <memory>
 #include <vector>
 
+enum class FigureType;
 class Move;
 class Board;
+class Player;
 
 class Figure {
   protected:
@@ -25,11 +26,11 @@ class Figure {
     Color::ColorT getColor() const;
     //
     virtual std::vector<std::unique_ptr<Move>>
-    calculateLegalMoves(Board &board) = 0;
+    calculateLegalMoves(Board &board) const = 0;
     void
-    move(int coordinate, Board &board); // todo make virtual and impl for pawn(set EnPassant)
+    move(int coordinate, Board &board);
     bool isFirstMove() const;
-    virtual std::string getFigureName() = 0;
+    virtual std::string getFigureName() const = 0;
     virtual std::unique_ptr<Figure> clone() const = 0;
 };
 
@@ -50,11 +51,13 @@ class King : public Figure {
     ~King() override = default;
     //
     std::vector<std::unique_ptr<Move>>
-    calculateLegalMoves(Board &board) override;
+    calculateLegalMoves(Board &board) const override;
     bool isCastled() const;
     bool isInCheck() const;
-    std::string getFigureName() override;
+    std::string getFigureName() const override;
     std::unique_ptr<Figure> clone() const override;
+    //
+    friend Player;
 };
 
 class Queen : public Figure {
@@ -72,8 +75,8 @@ class Queen : public Figure {
     ~Queen() override = default;
     //
     std::vector<std::unique_ptr<Move>>
-    calculateLegalMoves(Board &board) override;
-    std::string getFigureName() override;
+    calculateLegalMoves(Board &board) const override;
+    std::string getFigureName() const override;
     std::unique_ptr<Figure> clone() const override;
 };
 
@@ -91,8 +94,8 @@ class Rook : public Figure {
     ~Rook() override = default;
     //
     std::vector<std::unique_ptr<Move>>
-    calculateLegalMoves(Board &board) override;
-    std::string getFigureName() override;
+    calculateLegalMoves(Board &board) const override;
+    std::string getFigureName() const override;
     std::unique_ptr<Figure> clone() const override;
 };
 
@@ -115,8 +118,8 @@ class Knight : public Figure {
     ~Knight() override = default;
     //
     std::vector<std::unique_ptr<Move>>
-    calculateLegalMoves(Board &board) override;
-    std::string getFigureName() override;
+    calculateLegalMoves(Board &board) const override;
+    std::string getFigureName() const override;
     std::unique_ptr<Figure> clone() const override;
 };
 
@@ -134,15 +137,14 @@ class Bishop : public Figure {
     ~Bishop() override = default;
     //
     std::vector<std::unique_ptr<Move>>
-    calculateLegalMoves(Board &board) override;
-    std::string getFigureName() override;
+    calculateLegalMoves(Board &board) const override;
+    std::string getFigureName() const override;
     std::unique_ptr<Figure> clone() const override;
 };
 
 class Pawn : public Figure {
   private:
     static constexpr int CANDIDATE_MOVE_COORDINATES[]{8, 16, 7, 9};
-    bool enPassant{};
     bool isHasEnPassantMove(Board &board, int enPassantCoordinate) const;
 
   public:
@@ -150,13 +152,10 @@ class Pawn : public Figure {
     Pawn(const Pawn &pawn) = default;
     ~Pawn() override = default;
     //
-    void setEnPassant(bool enPassant);
-    //
     std::vector<std::unique_ptr<Move>>
-    calculateLegalMoves(Board &board) override;
-    std::string getFigureName() override;
+    calculateLegalMoves(Board &board) const override;
+    std::string getFigureName() const override;
     std::unique_ptr<Figure> clone() const override;
-    bool isEnPassant() const;
 };
 
 #endif

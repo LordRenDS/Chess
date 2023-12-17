@@ -8,61 +8,63 @@ class Board;
 class Move {
   protected:
     Move() = default;
-    Figure *movedFigure{};
-    int coordinateToMove{};
+    const Figure *movedFigure{};
+    const int coordinateToMove{};
 
   public:
-    explicit Move(Figure *figure, int coordinateToMove);
+    explicit Move(const Figure *figure, int coordinateToMove);
     virtual ~Move() = default;
     //
     int getCoordinateToMove() const;
-    Figure *getMovedFigure();
     const Figure *getMovedFigure() const;
     //
-    virtual std::unique_ptr<Board> execute(Board &board) = 0;
+    virtual std::unique_ptr<Board> execute(Board &board) const = 0;
 };
 
-class MajoreMove : public Move {
+class MajorMove : public Move {
   public:
     using Move::Move;
-    MajoreMove() = delete;
+    MajorMove() = delete;
+    ~MajorMove() override = default;
     //
-    std::unique_ptr<Board> execute(Board &board) override;
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 class AttackMove : public Move {
   protected:
-    Figure *attackFigure;
+    const Figure *attackFigure;
+    AttackMove(const Figure *figure, const Figure *attackFigure,
+               int coordinateToMove);
 
   public:
-    AttackMove(Figure *figure, Figure *attackFigure);
+    AttackMove(const Figure *figure, const Figure *attackFigure);
     ~AttackMove() override = default;
     //
-    Figure *getAttackFigure();
     const Figure *getAttackFigure() const;
     //
-    std::unique_ptr<Board> execute(Board &board) override = 0;
+    std::unique_ptr<Board> execute(Board &board) const override = 0;
 };
 
 class MajorAttackMove : public AttackMove {
   public:
     using AttackMove::AttackMove;
     //
-    std::unique_ptr<Board> execute(Board &board) override;
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 class PawnAttackMove : public AttackMove {
   public:
     using AttackMove::AttackMove;
     //
-    std::unique_ptr<Board> execute(Board &board) override;
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 class PawnEnPassantAttackMove : public PawnAttackMove {
   public:
-    using PawnAttackMove::PawnAttackMove;
-    //
-    std::unique_ptr<Board> execute(Board &board) override;
+    explicit PawnEnPassantAttackMove(const Figure *pawn,
+                                     const Figure *enPassantPawn,
+                                     int coordinateToMove);
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 class PawnMove : public Move {
@@ -70,14 +72,15 @@ class PawnMove : public Move {
     using Move::Move;
     PawnMove() = delete;
     //
-    std::unique_ptr<Board> execute(Board &board) override;
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 class PawnJump : public Move {
   public:
     using Move::Move;
+    PawnJump() = delete;
     //
-    std::unique_ptr<Board> execute(Board &board) override; // todo EnPassant set
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 class PawnPromotion : public Move {
@@ -91,34 +94,34 @@ class PawnPromotion : public Move {
     //
     void setPromotionFigure(std::unique_ptr<Figure> figure);
     //
-    std::unique_ptr<Board> execute(Board &board) override;
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 class CastleMove : public Move {
   private:
-    Figure *rook{};
-    int rookDestinationCoordinate{};
+    const Figure *rook{};
+    const int rookDestinationCoordinate{};
 
   public:
-    CastleMove(Figure *king, int kingDestCoord, Figure *rook,
+    CastleMove(const Figure *king, int kingDestCoord, const Figure *rook,
                int rookDestCoord);
     ~CastleMove() override = default;
     //
-    std::unique_ptr<Board> execute(Board &board) override = 0;
+    std::unique_ptr<Board> execute(Board &board) const override = 0;
 };
 
 class KingSideCastleMove : public CastleMove {
   public:
     using CastleMove::CastleMove;
     //
-    std::unique_ptr<Board> execute(Board &board) override;
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 class QueenSideCastleMove : public CastleMove {
   public:
     using CastleMove::CastleMove;
     //
-    std::unique_ptr<Board> execute(Board &board) override;
+    std::unique_ptr<Board> execute(Board &board) const override;
 };
 
 #endif
