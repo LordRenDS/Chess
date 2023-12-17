@@ -5,52 +5,74 @@
 #include <memory>
 #include <vector>
 
-// todo
 class Move;
 class Board;
+class King;
 
 class Player {
   private:
-    std::vector<std::unique_ptr<Move>> calculateLegalMoves(Board &board) const;
+    virtual std::vector<std::unique_ptr<Move>> calculateCastleMoves(
+        Board &board,
+        const std::vector<std::unique_ptr<Move>> &opponentMoves) = 0;
+
+  protected:
+    King *playerKing{};
+    std::vector<std::unique_ptr<Move>> legalMoves;
+    bool inCheck{};
+    //
+    //potential redundant square attack check in queen side castle move
     std::vector<Move *>
     calculateAttackOnSquare(int coordinate,
                             const std::vector<std::unique_ptr<Move>> &moves);
     bool
-    hasAttackOnKing(Board &board,
+    hasAttackOnKing(const std::vector<std::unique_ptr<Move>> &opponentMoves);
+    bool
+    hasAttackOnKing(const King *king,
                     const std::vector<std::unique_ptr<Move>> &opponentMoves);
     bool hasEscapeMoves(Board &board, Player *opponent);
-
-  protected:
-    std::vector<std::unique_ptr<Move>> legalMoves;
-    bool inCheck{};
+    std::vector<std::unique_ptr<Move>> calculateAllLegalMoves(
+        Board &board, const std::vector<std::unique_ptr<Move>> &opponentMoves);
 
   public:
-    Player(Board &board);
+    explicit Player(King *king,
+                    std::vector<std::unique_ptr<Move>> &&legalMoves);
     virtual ~Player() = default;
     //
     std::vector<std::unique_ptr<Move>> &getLegalMoves();
     virtual Color::ColorT getColor() const = 0;
     //
     MoveStatus makeMove(Move *move, Board &board, Player *opponent);
+    bool isInCheck() const;
     bool isInCheckMate(Board &board, Player *opponent);
-    std::string getPlayerName();
+    virtual std::string getPlayerName() const = 0;
 };
 
 class WhitePlayer : public Player {
+  private:
+    std::vector<std::unique_ptr<Move>> calculateCastleMoves(
+        Board &board,
+        const std::vector<std::unique_ptr<Move>> &opponentMoves) override;
+
   public:
     using Player::Player;
+    ~WhitePlayer() override = default;
     Color::ColorT getColor() const override;
+    std::string getPlayerName() const override;
 };
 
 class BlackPlayer : public Player {
+  private:
+    std::vector<std::unique_ptr<Move>> calculateCastleMoves(
+        Board &board,
+        const std::vector<std::unique_ptr<Move>> &opponentMoves) override;
+
   public:
     using Player::Player;
+    ~BlackPlayer() override = default;
     Color::ColorT getColor() const override;
+    std::string getPlayerName() const override;
 };
 
 class Bot : public Player {};
 
-// int main(){
-// 	WhitePlayer p();
-// }
 #endif
