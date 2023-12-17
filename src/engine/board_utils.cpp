@@ -17,7 +17,7 @@ const std::array<bool, BoardUtils::NUMBER_SQUARES> BoardUtils::SECOND_RANK =
 const std::array<bool, BoardUtils::NUMBER_SQUARES> BoardUtils::FIRST_RANK =
     initRow(56);
 const std::array<bool, BoardUtils::NUMBER_SQUARES> BoardUtils::FIRST_COLUMN =
-    initRow(0);
+    initColumn(0);
 const std::array<bool, BoardUtils::NUMBER_SQUARES> BoardUtils::SECOND_COLUMN =
     initColumn(1);
 const std::array<bool, BoardUtils::NUMBER_SQUARES> BoardUtils::SEVENTH_COLUMN =

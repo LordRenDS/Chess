@@ -37,7 +37,7 @@ class Color {
     static bool isPawnPromotionSquare(ColorT color, int position) {
         switch (color) {
             case ColorT::BLACK:
-                return BoardUtils::FIFTH_RANK[position];
+                return BoardUtils::FIRST_RANK[position];
             case ColorT::WHITE:
                 return BoardUtils::EIGHTH_RANK[position];
         }
