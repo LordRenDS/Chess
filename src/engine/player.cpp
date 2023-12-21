@@ -4,8 +4,15 @@
 #include "figure_type.h"
 #include "move.h"
 
-Player::Player(King *king, std::vector<std::unique_ptr<Move>> &&legalMoves)
-    : playerKing(king), legalMoves(std::move(legalMoves)) {
+Player::Player(King *king, std::vector<std::unique_ptr<Move>> &&legalMoves,
+               bool inCheck)
+    : playerKing(king), legalMoves(std::move(legalMoves)), inCheck(inCheck) {
+}
+
+Player::Player(const Player &player)
+    : playerKing(player.playerKing), inCheck(player.inCheck) {
+    for (auto &move : player.legalMoves)
+        legalMoves.push_back(move->clone());
 }
 
 std::vector<Move *> Player::calculateAttackOnSquare(
@@ -177,3 +184,13 @@ Color::ColorT BlackPlayer::getColor() const {
 std::string BlackPlayer::getPlayerName() const {
     return "Black player";
 }
+// Color::ColorT Bot::getColor() const {
+//     return Color::ColorT::BLACK;
+// }
+// std::string Bot::getPlayerName() const {
+//     return std::string();
+// }
+// std::vector<std::unique_ptr<Move>> Bot::calculateCastleMoves(
+//     Board &board, const std::vector<std::unique_ptr<Move>> &opponentMoves) {
+//     return std::vector<std::unique_ptr<Move>>();
+// }

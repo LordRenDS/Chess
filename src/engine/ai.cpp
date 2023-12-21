@@ -7,7 +7,7 @@
 #include <memory>
 
 Move *minimaxRoot(int depth, Table &table, bool isMax) {
-    int bestScore{1000};
+    int bestScore{-10000};
     Move *bestMove{};
     for (auto &move : table.getBlackPlayer()->getLegalMoves()) {
         auto calculationTable(std::make_unique<Table>(table));
@@ -22,23 +22,23 @@ Move *minimaxRoot(int depth, Table &table, bool isMax) {
                 calculationTable->getWhitePlayer()) ==
             MoveStatus::LEAVE_PLAYER_IN_CHEK)
             continue;
-        Score score = minimax(depth - 1, *calculationTable, 10000, 10000, !isMax);
-        if (score.white < bestScore) {
-            bestScore = score.white;
+        int score =
+            minimax(depth - 1, *calculationTable, -10000, 10000, !isMax);
+        if (score >= bestScore) {
+            bestScore = score;
             bestMove = move.get();
         }
     }
     return bestMove;
 }
 
-Score minimax(int depth, Table &table, int alpha, int beta, bool isMax) {
+int minimax(int depth, Table &table, int alpha, int beta, bool isMax) {
     if (!depth)
-        return Score{table.getBoard()->evaluateBoard(Color::ColorT::WHITE),
-                     table.getBoard()->evaluateBoard(Color::ColorT::BLACK)};
-    Score score{};
-    Score nextScore{};
+        return -table.getBoard()->evaluateBoard();
+    int score{};
+    int nextScore{};
     if (isMax) {
-        score = {1000, -1000};
+        score = -10000;
         for (auto &move : table.getBlackPlayer()->getLegalMoves()) {
             auto calculationTable(std::make_unique<Table>(table));
             Move *mirrorMove{};
@@ -52,16 +52,15 @@ Score minimax(int depth, Table &table, int alpha, int beta, bool isMax) {
                     calculationTable->getWhitePlayer()) ==
                 MoveStatus::LEAVE_PLAYER_IN_CHEK)
                 continue;
-            nextScore =
-                minimax(depth - 1, *calculationTable, alpha, beta, !isMax);
-            score = score.white < nextScore.white ? score : nextScore;
-//            alpha = std::min(alpha, score.white);
-//            if (beta >= alpha)
-//                return score;
+            score = std::max(score, minimax(depth - 1, *calculationTable, alpha,
+                                            beta, !isMax));
+            alpha = std::max(alpha, score);
+            if (beta <= alpha)
+                return score;
         }
         return score;
     } else {
-        score = {-1000, 1000};
+        score = 10000;
         for (auto &move : table.getWhitePlayer()->getLegalMoves()) {
             auto calculationTable(std::make_unique<Table>(table));
             Move *mirrorMove{};
@@ -75,12 +74,11 @@ Score minimax(int depth, Table &table, int alpha, int beta, bool isMax) {
                     calculationTable->getBlackPlayer()) ==
                 MoveStatus::LEAVE_PLAYER_IN_CHEK)
                 continue;
-            nextScore =
-                minimax(depth - 1, *calculationTable, alpha, beta, !isMax);
-            score = score.black < nextScore.black ? score : nextScore;
-//            beta = std::min(beta, score.black);
-//            if (beta >= alpha)
-//                return score;
+            score = std::min(score, minimax(depth - 1, *calculationTable, alpha,
+                                            beta, !isMax));
+            beta = std::min(beta, score);
+            if (beta <= alpha)
+                return score;
         }
         return score;
     }

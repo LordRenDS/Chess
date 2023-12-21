@@ -11,6 +11,6 @@ struct Score {
 
 Move *minimaxRoot(int depth, Table &table, bool isMax);
 
-Score minimax(int depth, Table &table, int alpha, int beta, bool isMax);
+int minimax(int depth, Table &table, int alpha, int beta, bool isMax);
 
 #endif

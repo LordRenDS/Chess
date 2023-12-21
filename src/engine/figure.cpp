@@ -4,8 +4,10 @@
 #include "figure_type.h"
 #include "move.h"
 
-Figure::Figure(int coordinate, Color::ColorT color, FigureType figureType)
-    : coordinate(coordinate), color(color), figureType(figureType) {
+Figure::Figure(int coordinate, Color::ColorT color, FigureType figureType,
+               int value)
+    : coordinate(coordinate), color(color), figureType(figureType),
+      value(value) {
 }
 
 int Figure::getCoordinate() const {
@@ -18,7 +20,11 @@ FigureType Figure::getFigureType() const {
 
 Color::ColorT Figure::getColor() const {
     return color;
-};
+}
+
+int Figure::getValue() const {
+    return value;
+}
 
 void Figure::move(int coordinate, Board &board) {
     board.getSquare(coordinate)
@@ -30,7 +36,14 @@ void Figure::move(int coordinate, Board &board) {
 
 bool Figure::isFirstMove() const {
     return firstMove;
-};
+}
+
+bool Figure::equals(const Figure &other) const {
+    return this == &other ||
+           (typeid(*this) == typeid(other) && coordinate == other.coordinate &&
+            color == other.color && figureType == other.figureType &&
+            value == other.value && firstMove == other.firstMove);
+}
 
 bool King::isFirstColumnExclusion(int currentPosition, int candidateOffset) {
     return BoardUtils::FIRST_COLUMN[currentPosition] &&
@@ -45,7 +58,7 @@ bool King::isEightColumnExclusion(int currentPosition, int candidateOffset) {
 }
 
 King::King(int coordinate, Color::ColorT color)
-    : Figure(coordinate, color, FigureType::KING) {
+    : Figure(coordinate, color, FigureType::KING, 90) {
 }
 
 std::vector<std::unique_ptr<Move>>
@@ -95,9 +108,20 @@ std::string King::getFigureName() const {
 std::unique_ptr<Figure> King::clone() const {
     return std::make_unique<King>(*this);
 }
+bool King::equals(const Figure &other) const {
+    if (this == &other)
+        return true;
+    try {
+        auto &otherKing = dynamic_cast<const King &>(other);
+        return Figure::equals(other) && castled == otherKing.castled &&
+               inCheck == otherKing.inCheck;
+    } catch (std::bad_cast &e) {
+        return false;
+    }
+}
 
 Queen::Queen(int coordinate, Color::ColorT color)
-    : Figure(coordinate, color, FigureType::QUEEN) {
+    : Figure(coordinate, color, FigureType::QUEEN, 9) {
 }
 
 bool Queen::isFirstColumnExclusion(int currentPosition, int candidateOffset) {
@@ -158,7 +182,7 @@ std::unique_ptr<Figure> Queen::clone() const {
 }
 
 Rook::Rook(int coordinate, Color::ColorT color)
-    : Figure(coordinate, color, FigureType::ROOK) {
+    : Figure(coordinate, color, FigureType::ROOK, 5) {
 }
 
 bool Rook::isFirstColumnExclusion(int currentPosition, int candidateOffset) {
@@ -215,7 +239,7 @@ std::unique_ptr<Figure> Rook::clone() const {
 }
 
 Knight::Knight(int coordinate, Color::ColorT color)
-    : Figure(coordinate, color, FigureType::KNIGHT) {
+    : Figure(coordinate, color, FigureType::KNIGHT, 3) {
 }
 
 bool Knight::isFirstColumnExclusion(int currentPosition, int candidateOffset) {
@@ -283,7 +307,7 @@ std::unique_ptr<Figure> Knight::clone() const {
 }
 
 Bishop::Bishop(int coordinate, Color::ColorT color)
-    : Figure(coordinate, color, FigureType::BISHOP) {
+    : Figure(coordinate, color, FigureType::BISHOP, 3) {
 }
 
 bool Bishop::isFirstColumnExclusion(int currentPosition, int candidateOffset) {
@@ -342,7 +366,7 @@ std::unique_ptr<Figure> Bishop::clone() const {
 }
 
 Pawn::Pawn(int coordinate, Color::ColorT color)
-    : Figure(coordinate, color, FigureType::PAWN) {
+    : Figure(coordinate, color, FigureType::PAWN, 1) {
 }
 
 bool Pawn::isHasEnPassantMove(Board &board, int enPassantCoordinate) const {
@@ -424,8 +448,7 @@ Pawn::calculateLegalMoves(Board &board) const {
                                    Color::getOppositeDirection(color))
                         ->getFigureOnSquare();
                 legalMoves.push_back(std::make_unique<PawnEnPassantAttackMove>(
-                    this, figureOnCandidate,
-                        candidateDestinationCoordinate));
+                    this, figureOnCandidate, candidateDestinationCoordinate));
             }
         } else if (currentCandidateOffset == 9 &&
                    !((BoardUtils::EIGHT_COLUMN[coordinate] &&
