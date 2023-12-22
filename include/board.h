@@ -54,6 +54,7 @@ class Board {
     calculateLegalMoves(Color::ColorT playerColor);
     King *getKing(Color::ColorT color);
     void printBoard() const;
+    int evaluateBoard();
 };
 
 #endif

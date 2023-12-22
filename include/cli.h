@@ -20,14 +20,18 @@ class Table {
     std::unique_ptr<WhitePlayer> whitePlayer;
     std::unique_ptr<BlackPlayer> blackPlayer;
     GameMode gameMode{};
+    int difficulty{};
+    //
     void setGameMode();
     void setPlayers();
+    void setDifficulty();
     Move *getPlayerTurn(Player *currentPlayer);
     std::unique_ptr<Figure> getPromoteFigure(const Move *move) const;
     Player *getOpponent(const Player *player);
 
   public:
     Table();
+    Table(const Table &table);
     ~Table() = default;
     //
     Board *getBoard();

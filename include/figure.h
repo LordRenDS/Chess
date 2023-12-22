@@ -15,15 +15,18 @@ class Figure {
     Color::ColorT color;
     bool firstMove{true};
     FigureType figureType;
+    int value{};
 
   public:
-    explicit Figure(int coordinate, Color::ColorT color, FigureType figureType);
+    explicit Figure(int coordinate, Color::ColorT color, FigureType figureType,
+                    int value);
     Figure(const Figure &figure) = default;
     virtual ~Figure() = default;
     //
     int getCoordinate() const;
     FigureType getFigureType() const;
     Color::ColorT getColor() const;
+    int getValue() const;
     //
     virtual std::vector<std::unique_ptr<Move>>
     calculateLegalMoves(Board &board) const = 0;
@@ -32,6 +35,7 @@ class Figure {
     bool isFirstMove() const;
     virtual std::string getFigureName() const = 0;
     virtual std::unique_ptr<Figure> clone() const = 0;
+    virtual bool equals(const Figure &other) const;
 };
 
 class King : public Figure {
@@ -56,6 +60,7 @@ class King : public Figure {
     bool isInCheck() const;
     std::string getFigureName() const override;
     std::unique_ptr<Figure> clone() const override;
+    bool equals(const Figure &other) const override;
     //
     friend Player;
 };

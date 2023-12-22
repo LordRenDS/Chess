@@ -201,3 +201,14 @@ void Board::printBoard() const {
         }
     }
 }
+
+int Board::evaluateBoard() {
+    int score{};
+    for (auto figures(getActiveFigures(Color::ColorT::WHITE));
+         auto &figure : figures)
+        score += figure->getValue();
+    for (auto figures(getActiveFigures(Color::ColorT::BLACK));
+         auto &figure : figures)
+        score -= figure->getValue();
+    return score;
+}

@@ -20,7 +20,7 @@ class BoardUtils {
     static const std::array<bool, NUMBER_SQUARES> SECOND_COLUMN;
     static const std::array<bool, NUMBER_SQUARES> SEVENTH_COLUMN;
     static const std::array<bool, NUMBER_SQUARES> EIGHT_COLUMN;
-    static int getCoordinateAtPosition(const std::string& position);
+    static int getCoordinateAtPosition(const std::string &position);
     static std::string getPositionAtCoordinate(int coordinate);
     static bool isValidSquareCoordinate(int coordinate);
 
