@@ -1,37 +1,49 @@
 @startuml Chess
 skinparam classAttributeIconSize 0
 left to right direction
-skinparam linetype ortho
+' skinparam linetype ortho
 
 package engine{
     package board{
-        class BoardUtils{
-            {static} +NUMBER_SQUARES : int
-            {static} -ALGEBRAIC_NOTATION : array<string>
-            {static} -POSITION_TO_COORDINATE : map<string, int>
-            {static} +getCoordinateAtPosition(position : string) : int
-            {static} +getPositionAtCoordinate(coordinate : int) : string
-            {static} -initializeAlgebraicNotation() : array<string>
-            {static} -initializePositionToCoordinate() : map<string, int>
-        }
-        class Board{
-            -board : array<Square>
-            -whileFigures : vector<Figure>
-            -blackFigures : vector<Figure>
-            -setFigures()
-            +removeFigure(figure : Figure)
-        }
         class Square{
             -coordinate : int
-            -figureOnSquare : Figure
-            +isSquareOccupie() : bool
+            -figureOnSquare : std::unique_ptr<Figure>
+            ..getters..
+            +getCoordinate() const : int
+            +getFigureOnSquare() : Figure *
+            +getFigureOnSquare() const : const Figure *
+            ..setters..
+            +setFigureOnSquare(newFigure : std::unique_ptr<Figure>)
+            __
+            +releaseFigure() : std::unique_ptr<Figure>
+            +isSquareOccupied() const : bool
         }
-        abstract class Move{
-            #figure : Figure
-            #coordinateToMove : int
-            {abstract} +execute()
+        class Board{
+            -board : std::array<std::unique_ptr<Square>, BoardUtils::NUMBER_SQUARES>
+            -enPassantPawn : Pawn *
+            ..getters..
+            +getEnPassantPawn() : Pawn *
+            ..setters..
+            +setEnPassantPawn(pawn : Pawn *);
+            __
+            -setFigureOnBoard(figure : std::unique_ptr<Figure>)
+            +operator=(board : Board &&) noexcept : Board &
+            +getActiveFigures() : std::vector<Figure *>
+            +getActiveFigures(color : Color::ColorT) : std::vector<Figure *>
+            +getSquare(coordinate : int) : Square *
+            +getSquare(coordinate : int) const : const Square *
+            +calculateLegalMoves(playerColor : Color::ColorT) : std::vector<std::unique_ptr<Move>>
+            +getKing(color : Color::ColorT ) : King *
+            +printBoard() const
+            +evaluateBoard() : int
         }
-        class MajoreMove
+
+        Square --* Board
+    }
+
+    package move{
+        abstract class Move{}
+        class MajorMove
         class PawnMove
         class PawnJump
         class PawnPromotion
@@ -42,8 +54,8 @@ package engine{
         abstract class CastleMove
         class KingSideCastleMove
         class QueenSideCastleMove
-        Square --* Board
-        Move <|-- MajoreMove
+
+        Move <|-- MajorMove
         Move <|-- PawnMove
         Move <|-- PawnJump
         Move <|-- PawnPromotion
@@ -57,81 +69,126 @@ package engine{
     }
 
     package figure{
-        enum FigureType{
-            KING
-            QUEEN
-            ROOK
-            KNIGHT
-            BISHOP
-            PAWN
-        }
-        abstract class Figure{
-            #coordinate : int
-            #moves : vector<Move>
-            #color : Color
-            #firstMove : bool
-            #figureType : FigureType
-            {abstract} +calculateLegalMoves(board : Board)
-            +move(coordinate : int)
-            +isFirstMove() : bool
-        }
-        class King{
-            -castled : bool
-            +isCastled() : bool
-        }
+        abstract class Figure{}
+        class King{}
         class Queen
         class Rook
         class Knight
         class Bishop
-        class Pawn{
-            -enPassant : bool
-        }
-        Figure *-- FigureType
-        King --|> Figure
-        Queen --|> Figure
-        Rook --|> Figure
-        Knight --|> Figure
-        Bishop --|> Figure
-        Pawn --|> Figure
-    }
+        class Pawn{}
 
-    Move --*  Figure
-    Figure --* Board
+        Figure <|-- King
+        Figure <|-- Queen
+        Figure <|-- Rook
+        Figure <|-- Knight
+        Figure <|-- Bishop
+        Figure <|-- Pawn
+    }
 
     package player{
-        enum MoveStatus{
-            DONE
-            ILLEGAL_MOVE
-            LEAVE_PLAYER_IN_CHEK
-        }
-        abstract class Player{
-            -legalMoves : vector<Move>
-            -inCheck : bool
-            -calculateAttackOnSquare(opponentMoves : vector<Move>) : vector<Move>
-            +makeMove(coordinate : int, board : Board) : MoveStatus
-            {abstract} +getColor() : Color
-            {abstract} +getOponent() : Player
-            {abstract} +getActiveFigures(board : Board) : vector<Figures>
-            +isInCheck() : bool
-            +isInCheckMate() : bool
-        }
+        abstract class Player{}
         class WhitePlayer
         class BlackPlayer
-        class Bot
-        WhitePlayer --|> Player
-        BlackPlayer --|> Player
-        Bot --|> Player
+
+        Player <|-- WhitePlayer
+        Player <|-- BlackPlayer
     }
-    Move --o Player
-    enum Color{
-        BLACK
-        WHITE
+
+    class BoardUtils{
+        {static} +NUMBER_SQUARES : int
+        {static} +NUMBER_SQUARE_PER_ROW : int
+        {static} +EIGHTH_RANK : std::array<bool, NUMBER_SQUARES>
+        {static} +SEVENTH_RANK : std::array<bool, NUMBER_SQUARES>
+        {static} +SIXTH_RANK : std::array<bool, NUMBER_SQUARES>
+        {static} +FIFTH_RANK : std::array<bool, NUMBER_SQUARES>
+        {static} +FOURTH_RANK : std::array<bool, NUMBER_SQUARES>
+        {static} +THIRD_RANK : std::array<bool, NUMBER_SQUARES>
+        {static} +SECOND_RANK : std::array<bool, NUMBER_SQUARES>
+        {static} +FIRST_RANK : std::array<bool, NUMBER_SQUARES>
+        {static} +FIRST_COLUMN : std::array<bool, NUMBER_SQUARES>
+        {static} +SECOND_COLUMN : std::array<bool, NUMBER_SQUARES>
+        {static} +SEVENTH_COLUMN : std::array<bool, NUMBER_SQUARES>
+        {static} +EIGHT_COLUMN : std::array<bool, NUMBER_SQUARES>
+        {static} -ALGEBRAIC_NOTATION : std::array<std::string, NUMBER_SQUARES>
+        {static} -POSITION_TO_COORDINATE : std::map<std::string, int>
+
+        {static} +getCoordinateAtPosition(position : const std::string &) : int
+        {static} +getPositionAtCoordinate(coordinate : int) : std::string
+        {static} +isValidSquareCoordinate(coordinate : int) : bool
+        {static} -initRow(rowNumber : int) : std::array<bool, NUMBER_SQUARES>
+        {static} -initColumn(colNumber : int) : std::array<bool, NUMBER_SQUARES>
+        {static} -initializePositionToCoordinate() : std::map<std::string, int>
     }
-    Figure *-- Color
-    Square o-- Figure
-    Board *-- Figure
-    Player o-- Figure
-    Player --> Color
+    enum FigureType{
+        KING
+        QUEEN
+        ROOK
+        KNIGHT
+        BISHOP
+        PAWN
+    }
+    enum MoveStatus{
+        DONE
+        ILLEGAL_MOVE
+        LEAVE_PLAYER_IN_CHEK
+    }
+    package color{
+        class Color{}
+        enum ColorT{
+            BLACK
+            WHITE
+        }
+        Color ..> ColorT
+    }
+    class AI{}
+
+    Figure <--* Square
+
+    BoardUtils <.. Board
+    Pawn o-- Board
+    King <.. Board
+    Figure "*" -- "1" Board
+    color.ColorT <.. Board
+
+    color.ColorT <-- Figure
+    FigureType <-- Figure
+
+    Move o--> Figure
+    Board "1" -- "*" Move
+    PawnPromotion *-- Move
+    PawnPromotion *-- Figure
+
+    Board <.. Player
+    Move *-- Player
+    King o-- Player
+    color.ColorT <.. Player
+    MoveStatus <.. Player
+
+    Move <.. AI
+
+    ' FigureType <.. Board
+    ' FigureType <.. Player
+
+    ' color <.. figure
+    ' color.Color <.. King
+    ' color.Color <.. Queen
+    ' color.Color <.. Bishop
+    ' color.Color <.. Knight
+    ' color.Color <.. Rook
+    ' color.Color <.. Pawn
+
+    ' MoveStatus <.. AI
+
+    ' Move <.. AI
+    ' Move <.. Board
+    ' Move *-- Player
+
+    ' Square <.. King
+    ' Square <.. Queen
+    ' Square <.. Bishop
+    ' Square <.. Knight
+    ' Square <.. Rook
+    ' Square <.. Pawn
 }
 
 package cli{
@@ -139,20 +196,19 @@ package cli{
         PLAYERS
         BOT
     }
-    class Table{
-        -board : Board
-        -whitePlayer : Player
-        -blackPlayer : Player
-        -gameMode: GameMode
-        +startGame()
-        -setGameMode()
-        -setPlayers()
-        -getTurn() : int
-        -printBoard()
-    }
-    Table *--GameMode
+    class Table{}
+
+    Table --> GameMode
 }
 
-Table *-- Board
-Table *-- Player
+Board --* Table
+WhitePlayer --* Table
+BlackPlayer --* Table
+Move <.. Table
+Figure <.. Table
+Player <.. Table
+Table <.. AI
+
+hide empty member
+' hide member
 @enduml

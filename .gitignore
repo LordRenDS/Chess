@@ -1,8 +1,5 @@
 # dirs
-/.idea
-/.cache
-/diagrams
-/cmake-build-debug/
-/cmake-build-minsizerel/
-/cmake-build-release/
-/cmake-build-relwithdebinfo/
+.cache/
+.vscode/
+build/
+diagrams/

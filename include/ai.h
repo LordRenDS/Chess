@@ -4,13 +4,11 @@
 class Move;
 class Table;
 
-struct Score {
-    int white{};
-    int black{};
+class AI {
+  public:
+    static Move *minimaxRoot(int depth, Table &table, bool isMax);
+    static int minimax(int depth, Table &table, int alpha, int beta,
+                       bool isMax);
 };
-
-Move *minimaxRoot(int depth, Table &table, bool isMax);
-
-int minimax(int depth, Table &table, int alpha, int beta, bool isMax);
 
 #endif

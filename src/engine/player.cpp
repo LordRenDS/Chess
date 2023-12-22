@@ -125,7 +125,7 @@ std::vector<std::unique_ptr<Move>> WhitePlayer::calculateCastleMoves(
                     calculateAttackOnSquare(57, opponentMoves).empty() &&
                     rookSquare->getFigureOnSquare()->getFigureType() ==
                         FigureType::ROOK)
-                    castleMoves.push_back(std::make_unique<KingSideCastleMove>(
+                    castleMoves.push_back(std::make_unique<QueenSideCastleMove>(
                         playerKing, 58, rookSquare->getFigureOnSquare(), 59));
             }
         }
@@ -169,7 +169,7 @@ std::vector<std::unique_ptr<Move>> BlackPlayer::calculateCastleMoves(
                     calculateAttackOnSquare(3, opponentMoves).empty() &&
                     rookSquare->getFigureOnSquare()->getFigureType() ==
                         FigureType::ROOK)
-                    castleMoves.push_back(std::make_unique<KingSideCastleMove>(
+                    castleMoves.push_back(std::make_unique<QueenSideCastleMove>(
                         playerKing, 2, rookSquare->getFigureOnSquare(), 3));
             }
         }

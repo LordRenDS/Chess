@@ -101,8 +101,8 @@ void Table::startGame() {
             }
             std::cout << std::format("{} turn.\n",
                                      opponentPlayer->getPlayerName());
-            opponentPlayer->makeMove(minimaxRoot(difficulty, *this, true), *board,
-                                     currentPlayer);
+            opponentPlayer->makeMove(AI::minimaxRoot(difficulty, *this, true),
+                                     *board, currentPlayer);
             if (currentPlayer->isInCheckMate(*board, opponentPlayer)) {
                 std::cout << opponentPlayer->getPlayerName() << " wins!\n";
                 break;

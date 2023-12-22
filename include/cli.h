@@ -21,6 +21,7 @@ class Table {
     std::unique_ptr<BlackPlayer> blackPlayer;
     GameMode gameMode{};
     int difficulty{};
+    //
     void setGameMode();
     void setPlayers();
     void setDifficulty();

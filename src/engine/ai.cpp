@@ -6,7 +6,7 @@
 #include "player.h"
 #include <memory>
 
-Move *minimaxRoot(int depth, Table &table, bool isMax) {
+Move *AI::minimaxRoot(int depth, Table &table, bool isMax) {
     int bestScore{-10000};
     Move *bestMove{};
     for (auto &move : table.getBlackPlayer()->getLegalMoves()) {
@@ -32,7 +32,7 @@ Move *minimaxRoot(int depth, Table &table, bool isMax) {
     return bestMove;
 }
 
-int minimax(int depth, Table &table, int alpha, int beta, bool isMax) {
+int AI::minimax(int depth, Table &table, int alpha, int beta, bool isMax) {
     if (!depth)
         return -table.getBoard()->evaluateBoard();
     int score{};
